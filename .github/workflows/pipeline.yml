@@ -25,6 +25,7 @@ jobs:
       - name: build
         run: npm run build
       - name: test
+        id: tests
         run: npm run test
       - name: e2e tests
         uses: cypress-io/github-action@v5
@@ -35,9 +36,38 @@ jobs:
       - name: setup flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
       - name: deploy
+        id: deploy
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Notify succees
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        if: success()
+        with:
+          severity: info
+          details: A new version of Pokedex deployed.
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Notify failure of tests
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        if: ${{ failure() && steps.tests.conclusion == 'failure' }}
+        with:
+          severity: error
+          details: Deployment error - tests failed
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Notify failure of deployment
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        if: ${{ failure() && steps.deploy.conclusion == 'failure' }}
+        with:
+          severity: error
+          details: Deployment error - flyctl deploy failed
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Notify failure
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        if: ${{ failure() && steps.tests.conclusion != 'failure' && steps.deploy.conclusion != 'failure' }}
+        with:
+          severity: error
+          details: Deployment error 
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
     if: ${{ github.event_name == 'push' }}
