@@ -79,16 +79,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
-  notify_discord:
-    needs: [simple_deployment_pipeline]
-    if: ${{ github.event_name == 'push' }}
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Notify in Discord
-        uses: rjstone/discord-webhook-notify@v1.0.4
-        env:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          DEFAULT_BUMP: patch
   a_test_job:
     runs-on: ubuntu-20.04
     steps:
