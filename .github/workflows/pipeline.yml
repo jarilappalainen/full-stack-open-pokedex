@@ -45,6 +45,7 @@ jobs:
         if: success()
         with:
           severity: info
+          description: 
           details: A new version of Pokedex deployed.
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Notify failure of tests
@@ -52,6 +53,7 @@ jobs:
         if: ${{ failure() && steps.tests.conclusion == 'failure' }}
         with:
           severity: error
+          description: 
           details: Deployment error - tests failed
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Notify failure of deployment
@@ -59,6 +61,7 @@ jobs:
         if: ${{ failure() && steps.deploy.conclusion == 'failure' }}
         with:
           severity: error
+          description: 
           details: Deployment error - flyctl deploy failed
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Notify failure
@@ -66,6 +69,7 @@ jobs:
         if: ${{ failure() && steps.tests.conclusion != 'failure' && steps.deploy.conclusion != 'failure' }}
         with:
           severity: error
+          description: 
           details: Deployment error 
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
