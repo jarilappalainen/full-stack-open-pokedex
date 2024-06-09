@@ -54,7 +54,7 @@ jobs:
         with:
           severity: error
           description: 
-          details: Deployment error - tests failed
+          details: Test error - tests failed
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Notify failure of deployment
         uses: rjstone/discord-webhook-notify@v1.0.4
